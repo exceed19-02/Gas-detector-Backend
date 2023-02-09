@@ -10,6 +10,15 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-@router.get("/")
+
+@router.put("/", status_code=205)
 def root():
-    return {"msg": "Hello World"}
+    """
+    upgrade status of isOpen table in database
+    """
+    is_open = mongo_connection["Record"].find_one(
+        {"isCommand": True}, {"isCommand": False, '_id': False})["isOpen"]
+
+    mongo_connection["Record"].update_one(
+        {"isCommand": True}, {"$set": {"isOpen": not is_open}})
+    return {"message": f"already update command to {not is_open}"}

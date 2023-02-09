@@ -23,9 +23,10 @@ app.include_router(get_record.router)
 app.include_router(add_data.router)
 app.include_router(update_command.router)
 
+
 class Sensor(BaseModel):
     gas_quantity: Optional[int]
     time: Optional[datetime]
     status: Optional[str]
     isCommand: bool
-    isOpen : Optional[bool]
+    isOpen: Optional[bool]
