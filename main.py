@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, Body
 from pydantic import BaseModel
-#from routers import 
+from routers import add_data, get_record, update_command
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional, Union
 from datetime import date, datetime, timedelta
@@ -19,7 +19,9 @@ app.add_middleware(
 )
 
 # file based routing
-#app.include_router()
+app.include_router(get_record.router)
+app.include_router(add_data.router)
+app.include_router(update_command.router)
 
 class Sensor(BaseModel):
     gas_quantity: Optional[int]
