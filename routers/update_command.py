@@ -10,6 +10,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
 @router.get("/")
 def root():
     return {"msg": "Hello World"}
