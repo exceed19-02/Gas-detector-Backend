@@ -1,7 +1,9 @@
 # Project-backend API Docs
 http://group2.exceed19.online
 1. get last record : [get] http://group2.exceed19.online/record/last
-    - not finished
+    - return JSON object
+        - gas_quantity : int
+        - status : enum["SAFE","WARNING","DANGER"]
 2. get status of the window : [get] http://group2.exceed19.online/record/command
     - return
         - isOpen : bool[True: เปิด, False: ปิด]
