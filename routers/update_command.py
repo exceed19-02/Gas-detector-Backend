@@ -11,6 +11,7 @@ router = APIRouter(
 )
 
 
+
 @router.put("/{isOpen}", status_code=205)
 def root(isOpen: bool):
     """
@@ -25,3 +26,4 @@ def root(isOpen: bool):
     mongo_connection["Record"].update_one(
         {"isCommand": True}, {"$set": {"isOpen": isOpen}})
     return {"message": f"already set command to {isOpen}"}
+
