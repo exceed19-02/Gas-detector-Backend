@@ -10,6 +10,21 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-@router.get("/")
-def root():
-    return {"msg": "Hello World"}
+class Sensor(BaseModel):
+    gas_quantity: Optional[int]
+    time: Optional[datetime]
+    status: Optional[str]
+    isCommand: bool
+    isOpen : Optional[bool]
+
+# add new record by input gas_quantity and status in body format
+@router.post("/", status_code=201)
+def add_record(gas_quantity: int = Body(), status: str = Body()):
+    data = {
+        "gas_quantity": gas_quantity,
+        "time": datetime.now(),
+        "status": status,
+        "isCommand": False
+    }
+    mongo_connection["Record"].insert_one(data)
+    return {"message": "Record created"}
