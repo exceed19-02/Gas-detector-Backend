@@ -1,9 +1,13 @@
-from fastapi import APIRouter, Body, HTTPException
-from typing import Union, Optional
-from pydantic import BaseModel
-from datetime import date, datetime
-from database import mongo_connection
+from collections import defaultdict
+from datetime import datetime
+from typing import Optional
+
 from bson.son import SON
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+
+from database import mongo_connection
+from utils import get_bangkok_time
 
 router = APIRouter(
     prefix="/record",
@@ -19,7 +23,7 @@ class Sensor(BaseModel):
     isCommand: bool
     isOpen: Optional[bool]
 
-# get status of the window
+
 @router.get("/command")
 def get_command():
     rec = mongo_connection["Record"].find_one({"isCommand": True})
@@ -29,6 +33,8 @@ def get_command():
         return {"isOpen": rec["isOpen"]}
 
 # get last record
+
+
 @router.get("/last")
 def last_quantity_status():
     pipeline = [
@@ -43,12 +49,35 @@ def last_quantity_status():
         return {"gas_quantity": record["gas_quantity"], "status": record["status"]}
 
 # get all data in the last hour
-@router.get("/lasthour")
+
+
+@router.get("/last_hour")
 def last_hour():
     data = []
-    alldata = list(mongo_connection["Record"].find({"isCommand": False}, {"_id": 0, "status": 0, "isCommand": 0}))
-    limit = datetime.now().timestamp() - 3600
+    alldata = list(mongo_connection["Record"].find(
+        {"isCommand": False}, {"_id": 0, "status": 0, "isCommand": 0}))
+    limit = get_bangkok_time().timestamp() - 3600
     for i in alldata:
         if i["time"].timestamp() > limit:
             data.append(i)
     return data
+
+
+@router.get("/last_day")
+def last_day_average():
+    data = defaultdict(list)
+    alldata = list(mongo_connection["Record"].find(
+        {"isCommand": False}, {"_id": 0, "status": 0, "isCommand": 0}))
+    limit = get_bangkok_time().timestamp() - 24 * 3600
+    for i in alldata:
+        if i["time"].timestamp() > limit:
+            hour = i["time"]
+            data[hour].append(i)
+    result = {}
+    for hour, readings in data.items():
+        result[hour] = sum(
+            map(lambda x: x["gas_quantity"], readings)) / len(readings)
+
+    return [
+        {"x": x, "y": y} for x, y in result.items()
+    ]
