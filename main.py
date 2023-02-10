@@ -36,37 +36,43 @@ class Sensor(BaseModel):
 mock_data = [
     {
         "gas_quantity": 5,
-        "time": datetime(2023, 2, 9, 11, 0, 0, 0),
+        "time": datetime.fromtimestamp(datetime.now().timestamp()-7200),
+        "status": "SAFE",
+        "isCommand": False
+    },
+    {
+        "gas_quantity": 5,
+        "time": datetime.fromtimestamp(datetime.now().timestamp()-3600),
         "status": "SAFE",
         "isCommand": False
     },
     {
         "gas_quantity": 10,
-        "time": datetime(2023, 2, 9, 11, 5, 0, 0),
+        "time": datetime.fromtimestamp(datetime.now().timestamp()-2700),
         "status": "SAFE",
         "isCommand": False
     },
     {
         "gas_quantity": 10,
-        "time": datetime(2023, 2, 9, 11, 10, 0, 0),
+        "time": datetime.fromtimestamp(datetime.now().timestamp()-1800),
         "status": "SAFE",
         "isCommand": False
     },
     {
         "gas_quantity": 60,
-        "time": datetime(2023, 2, 9, 11, 15, 0, 0),
+        "time": datetime.fromtimestamp(datetime.now().timestamp()-900),
         "status": "WARNING",
         "isCommand": False
     },
     {
         "gas_quantity": 20,
-        "time": datetime(2023, 2, 10, 10, 0, 0, 0),
+        "time": datetime.fromtimestamp(datetime.now().timestamp()-450),
         "status": "SAFE",
         "isCommand": False
     },
     {
         "gas_quantity": 80,
-        "time": datetime(2023, 2, 10, 11, 0, 0, 0),
+        "time": datetime.fromtimestamp(datetime.now().timestamp()-100),
         "status": "DANGER",
         "isCommand": False
     },
