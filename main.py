@@ -35,7 +35,7 @@ class Sensor(BaseModel):
 
 # mock data
 mock_data = []
-for i in range(0,24):
+for i in range(-1,23,-1):
     mock_data.append({
         "gas_quantity": randint(10,2000),
         "time": datetime.fromtimestamp(datetime.now().timestamp()-(2500+(i*3600))),
