@@ -1,7 +1,4 @@
-from fastapi import APIRouter, Body
-from typing import Union, Optional
-from pydantic import BaseModel
-from datetime import date, datetime
+from fastapi import APIRouter
 from database import mongo_connection
 
 router = APIRouter(
@@ -9,7 +6,6 @@ router = APIRouter(
     tags=["update"],
     responses={404: {"description": "Not found"}},
 )
-
 
 
 @router.put("/{isOpen}", status_code=205)
@@ -26,4 +22,3 @@ def root(isOpen: bool):
     mongo_connection["Record"].update_one(
         {"isCommand": True}, {"$set": {"isOpen": isOpen}})
     return {"message": f"already set command to {isOpen}"}
-

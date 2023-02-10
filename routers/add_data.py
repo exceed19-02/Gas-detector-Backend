@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Body
-from typing import Union, Optional
+from typing import Optional
 from pydantic import BaseModel
-from datetime import date, datetime
+from datetime import datetime
 from utils import get_bangkok_time
 from database import mongo_connection
 
