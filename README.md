@@ -4,6 +4,10 @@ http://group2.exceed19.online
     - return list of
         - x(time) : datetime.datetime
         - y(gas_quantity) : int
+2. get all record in the last day : [get] http://group2.exceed19.online/record/last_day
+    - return list of
+        - x(time) : datetime.datetime
+        - y(avg of gas_quantity) : float
 2. get last record : [get] http://group2.exceed19.online/record/last
     - return JSON object
         - gas_quantity : int

@@ -24,6 +24,7 @@ class Sensor(BaseModel):
     isOpen: Optional[bool]
 
 
+# get the status of the window
 @router.get("/command")
 def get_command():
     rec = mongo_connection["Record"].find_one({"isCommand": True})
@@ -32,9 +33,8 @@ def get_command():
     else:
         return {"isOpen": rec["isOpen"]}
 
+
 # get last record
-
-
 @router.get("/last")
 def last_quantity_status():
     pipeline = [
@@ -49,6 +49,7 @@ def last_quantity_status():
         return {"gas_quantity": record["gas_quantity"], "status": record["status"]}
 
 
+# get all record in the last day as list (interval of 1 hour)
 @router.get("/last_day")
 def last_day_average():
     data = defaultdict(list)
@@ -72,6 +73,7 @@ def last_day_average():
     ]
 
 
+# get all record in the last hour
 @router.get("/last_hour")
 def last_hour():
     data = []

@@ -72,16 +72,14 @@ mock_data = [
     },
 ]
 
+
 # add mock data
-
-
 @app.post("/addmock")
 def add_mockdata():
     mongo_connection["Record"].insert_many(mock_data)
 
+
 # delete all data except isCommand
-
-
 @app.delete("/")
 def delete_record():
     mongo_connection["Record"].delete_many({"isCommand": False})

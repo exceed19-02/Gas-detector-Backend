@@ -8,6 +8,7 @@ router = APIRouter(
 )
 
 
+# update the status of the window
 @router.put("/{isOpen}", status_code=205)
 def root(isOpen: bool):
     """

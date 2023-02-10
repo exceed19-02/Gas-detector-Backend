@@ -19,9 +19,8 @@ class Sensor(BaseModel):
     isCommand: bool
     isOpen: Optional[bool]
 
+
 # add new record by input gas_quantity and status in body format
-
-
 @router.post("/", status_code=201)
 def add_record(gas_quantity: int = Body(), status: str = Body()):
 
