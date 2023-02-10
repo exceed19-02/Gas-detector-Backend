@@ -2,8 +2,8 @@
 http://group2.exceed19.online
 1. get all record in the last hour : [get] http://group2.exceed19.online/record/lasthour
     - return list of
-        - gas_quantity : int
-        - time : datetime.datetime
+        - x(time) : datetime.datetime
+        - y(gas_quantity) : int
 2. get last record : [get] http://group2.exceed19.online/record/last
     - return JSON object
         - gas_quantity : int
