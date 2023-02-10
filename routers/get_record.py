@@ -50,5 +50,9 @@ def last_hour():
     limit = datetime.now().timestamp() - 3600
     for i in alldata:
         if i["time"].timestamp() > limit:
-            data.append(i)
+            temp = {
+                "x": i["time"],
+                "y": i["gas_quantity"]
+            }
+            data.append(temp)
     return data
