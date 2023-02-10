@@ -43,7 +43,7 @@ def last_quantity_status():
         return {"gas_quantity": record["gas_quantity"], "status": record["status"]}
 
 # get all data in the last hour
-@router.get("/lasthour")
+@router.get("/last_hour")
 def last_hour():
     data = []
     alldata = list(mongo_connection["Record"].find({"isCommand": False}, {"_id": 0, "status": 0, "isCommand": 0}))

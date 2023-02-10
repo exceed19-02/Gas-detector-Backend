@@ -1,6 +1,6 @@
 # Project-backend API Docs
 http://group2.exceed19.online
-1. get all record in the last hour : [get] http://group2.exceed19.online/record/lasthour
+1. get all record in the last hour : [get] http://group2.exceed19.online/record/last_hour
     - return list of
         - x(time) : datetime.datetime
         - y(gas_quantity) : int
