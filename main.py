@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 from datetime import datetime
 from database import mongo_connection
+from random import randint
 
 app = FastAPI()
 
@@ -33,50 +34,26 @@ class Sensor(BaseModel):
 
 
 # mock data
-mock_data = [
-    {
-        "gas_quantity": 5,
-        "time": datetime.fromtimestamp(datetime.now().timestamp()-7200),
-        "status": "SAFE",
-        "isCommand": False
-    },
-    {
-        "gas_quantity": 5,
-        "time": datetime.fromtimestamp(datetime.now().timestamp()-3600),
-        "status": "SAFE",
-        "isCommand": False
-    },
-    {
-        "gas_quantity": 10,
-        "time": datetime.fromtimestamp(datetime.now().timestamp()-2700),
-        "status": "SAFE",
-        "isCommand": False
-    },
-    {
-        "gas_quantity": 10,
-        "time": datetime.fromtimestamp(datetime.now().timestamp()-1800),
-        "status": "SAFE",
-        "isCommand": False
-    },
-    {
-        "gas_quantity": 60,
-        "time": datetime.fromtimestamp(datetime.now().timestamp()-900),
-        "status": "WARNING",
-        "isCommand": False
-    },
-    {
-        "gas_quantity": 20,
-        "time": datetime.fromtimestamp(datetime.now().timestamp()-450),
-        "status": "SAFE",
-        "isCommand": False
-    },
-    {
-        "gas_quantity": 80,
-        "time": datetime.fromtimestamp(datetime.now().timestamp()-100),
+mock_data = []
+for i in range(0,24):
+    mock_data.append({
+        "gas_quantity": randint(10,2000),
+        "time": datetime.fromtimestamp(datetime.now().timestamp()-(100+(i*3600))),
         "status": "DANGER",
         "isCommand": False
-    },
-]
+    })
+    mock_data.append({
+        "gas_quantity": randint(10,2000),
+        "time": datetime.fromtimestamp(datetime.now().timestamp()-(1300+(i*3600))),
+        "status": "DANGER",
+        "isCommand": False
+    })
+    mock_data.append({
+        "gas_quantity": randint(10,2000),
+        "time": datetime.fromtimestamp(datetime.now().timestamp()-(2500+(i*3600))),
+        "status": "DANGER",
+        "isCommand": False
+    })
 
 
 # add mock data
