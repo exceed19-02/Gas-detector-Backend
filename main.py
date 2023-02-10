@@ -38,7 +38,7 @@ mock_data = []
 for i in range(0,24):
     mock_data.append({
         "gas_quantity": randint(10,2000),
-        "time": datetime.fromtimestamp(datetime.now().timestamp()-(100+(i*3600))),
+        "time": datetime.fromtimestamp(datetime.now().timestamp()-(2500+(i*3600))),
         "status": "DANGER",
         "isCommand": False
     })
@@ -50,7 +50,7 @@ for i in range(0,24):
     })
     mock_data.append({
         "gas_quantity": randint(10,2000),
-        "time": datetime.fromtimestamp(datetime.now().timestamp()-(2500+(i*3600))),
+        "time": datetime.fromtimestamp(datetime.now().timestamp()-(100+(i*3600))),
         "status": "DANGER",
         "isCommand": False
     })
