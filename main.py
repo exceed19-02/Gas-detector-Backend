@@ -1,9 +1,9 @@
-from fastapi import FastAPI, HTTPException, Body
+from fastapi import FastAPI
 from pydantic import BaseModel
 from routers import add_data, get_record, update_command
 from fastapi.middleware.cors import CORSMiddleware
-from typing import Optional, Union
-from datetime import date, datetime, timedelta
+from typing import Optional
+from datetime import datetime
 from database import mongo_connection
 
 app = FastAPI()
@@ -31,52 +31,57 @@ class Sensor(BaseModel):
     isCommand: bool
     isOpen: Optional[bool]
 
+
 # mock data
 mock_data = [
     {
         "gas_quantity": 5,
-        "time": datetime(2023,2,9,11,0,0,0),
+        "time": datetime(2023, 2, 9, 11, 0, 0, 0),
         "status": "SAFE",
         "isCommand": False
     },
     {
         "gas_quantity": 10,
-        "time": datetime(2023,2,9,11,5,0,0),
+        "time": datetime(2023, 2, 9, 11, 5, 0, 0),
         "status": "SAFE",
         "isCommand": False
     },
     {
         "gas_quantity": 10,
-        "time": datetime(2023,2,9,11,10,0,0),
+        "time": datetime(2023, 2, 9, 11, 10, 0, 0),
         "status": "SAFE",
         "isCommand": False
     },
     {
         "gas_quantity": 60,
-        "time": datetime(2023,2,9,11,15,0,0),
+        "time": datetime(2023, 2, 9, 11, 15, 0, 0),
         "status": "WARNING",
         "isCommand": False
     },
     {
         "gas_quantity": 20,
-        "time": datetime(2023,2,10,10,0,0,0),
+        "time": datetime(2023, 2, 10, 10, 0, 0, 0),
         "status": "SAFE",
         "isCommand": False
     },
     {
         "gas_quantity": 80,
-        "time": datetime(2023,2,10,11,0,0,0),
+        "time": datetime(2023, 2, 10, 11, 0, 0, 0),
         "status": "DANGER",
         "isCommand": False
     },
 ]
 
 # add mock data
+
+
 @app.post("/addmock")
 def add_mockdata():
     mongo_connection["Record"].insert_many(mock_data)
 
 # delete all data except isCommand
+
+
 @app.delete("/")
 def delete_record():
     mongo_connection["Record"].delete_many({"isCommand": False})
