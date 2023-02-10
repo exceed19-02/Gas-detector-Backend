@@ -19,7 +19,7 @@ class Sensor(BaseModel):
     isCommand: bool
     isOpen: Optional[bool]
 
-
+# get status of the window
 @router.get("/command")
 def get_command():
     rec = mongo_connection["Record"].find_one({"isCommand": True})
@@ -28,7 +28,7 @@ def get_command():
     else:
         return {"isOpen": rec["isOpen"]}
 
-
+# get last record
 @router.get("/last")
 def last_quantity_status():
     pipeline = [
@@ -41,3 +41,14 @@ def last_quantity_status():
         raise HTTPException(status_code=400, detail="Not detect yet")
     else:
         return {"gas_quantity": record["gas_quantity"], "status": record["status"]}
+
+# get all data in the last hour
+@router.get("/lasthour")
+def last_hour():
+    data = []
+    alldata = list(mongo_connection["Record"].find({"isCommand": False}, {"_id": 0, "status": 0, "isCommand": 0}))
+    limit = datetime.now().timestamp() - 3600
+    for i in alldata:
+        if i["time"].timestamp() > limit:
+            data.append(i)
+    return data
