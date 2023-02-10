@@ -2,7 +2,6 @@ from fastapi import APIRouter, Body, HTTPException
 from typing import Optional
 from pydantic import BaseModel
 from datetime import datetime
-from utils import get_bangkok_time
 from database import mongo_connection
 
 router = APIRouter(
@@ -27,7 +26,7 @@ def add_record(gas_quantity: int = Body(), status: str = Body()):
         raise HTTPException(status_code=400, detail="Gas Quantity out of range")
     data = {
         "gas_quantity": gas_quantity,
-        "time":get_bangkok_time(),
+        "time": datetime.now(),
         "status": status,
         "isCommand": False
     }
