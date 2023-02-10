@@ -48,20 +48,6 @@ def last_quantity_status():
     else:
         return {"gas_quantity": record["gas_quantity"], "status": record["status"]}
 
-# get all data in the last hour
-
-
-@router.get("/last_hour")
-def last_hour():
-    data = []
-    alldata = list(mongo_connection["Record"].find(
-        {"isCommand": False}, {"_id": 0, "status": 0, "isCommand": 0}))
-    limit = get_bangkok_time().timestamp() - 3600
-    for i in alldata:
-        if i["time"].timestamp() > limit:
-            data.append(i)
-    return data
-
 
 @router.get("/last_day")
 def last_day_average():
@@ -81,3 +67,19 @@ def last_day_average():
     return [
         {"x": x, "y": y} for x, y in result.items()
     ]
+
+@router.get("/last_hour")
+def last_hour():
+    data = []
+    alldata = list(mongo_connection["Record"].find({"isCommand": False}, {"_id": 0, "status": 0, "isCommand": 0}))
+    limit = datetime.now().timestamp() - 3600
+    if len(alldata) < 1:
+        raise HTTPException(status_code=400, detail='No record yet')
+    for i in alldata:
+        if i["time"].timestamp() > limit:
+            temp = {
+                "x": i["time"],
+                "y": i["gas_quantity"]
+            }
+            data.append(temp)
+    return data
