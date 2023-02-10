@@ -1,6 +1,6 @@
 from collections import defaultdict
 from datetime import datetime
-from typing import Optional
+from typing import Dict, Optional
 
 from bson.son import SON
 from fastapi import APIRouter, HTTPException
@@ -17,6 +17,7 @@ router = APIRouter(
 
 
 class Sensor(BaseModel):
+    """sensor data model"""
     gas_quantity: Optional[int]
     time: Optional[datetime]
     status: Optional[str]
@@ -24,19 +25,32 @@ class Sensor(BaseModel):
     isOpen: Optional[bool]
 
 
-# get the status of the window
 @router.get("/command")
-def get_command():
+def get_command() -> Dict[str, bool]:
+    """get the status of the window
+
+    Raises:
+        HTTPException: if data is not found
+
+    Returns:
+        Dict: {"isOpen": bool}
+    """
     rec = mongo_connection["Record"].find_one({"isCommand": True})
     if not rec:
         raise HTTPException(status_code=400, detail="Not detect yet")
-    else:
-        return {"isOpen": rec["isOpen"]}
+    return {"isOpen": rec["isOpen"]}
 
 
-# get last record
 @router.get("/last")
 def last_quantity_status():
+    """get last record of gas quantity and status
+
+    Raises:
+        HTTPException: when not have any record
+
+    Returns:
+        Dict["gas_quantity": float, "status": str] -- _description_
+    """
     pipeline = [
         {"$sort": SON([("time", -1)])},
         {"$match": {"isCommand": False}},
@@ -45,13 +59,20 @@ def last_quantity_status():
     record = mongo_connection["Record"].aggregate(pipeline).next()
     if not record:
         raise HTTPException(status_code=400, detail="Not detect yet")
-    else:
-        return {"gas_quantity": record["gas_quantity"], "status": record["status"]}
+
+    return {"gas_quantity": record["gas_quantity"], "status": record["status"]}
 
 
-# get all record in the last day as list (interval of 1 hour)
 @router.get("/last_day")
 def last_day_average():
+    """get all record in the last day as list (interval of 1 hour)
+
+    Raises:
+        HTTPException: When record not found
+
+    Returns:
+        Dict["isCommand"] -- _description_
+    """
     data = defaultdict(list)
     alldata = list(mongo_connection["Record"].find(
         {"isCommand": False}, {"_id": 0, "status": 0, "isCommand": 0}))
@@ -61,15 +82,15 @@ def last_day_average():
     limit = get_bangkok_time().timestamp() - 24 * 3600
     for i in alldata:
         if i["time"].timestamp() > limit:
-            hour = i["time"]
-            data[hour].append(i)
+            date = i["time"]
+            data[datetime(date.day, date.month, date.day, date.hour)].append(i)
     result = {}
-    for hour, readings in data.items():
-        result[hour] = sum(
+    for date, readings in data.items():
+        result[date] = sum(
             map(lambda x: x["gas_quantity"], readings)) / len(readings)
 
     return [
-        {"x": x, "y": y} for x, y in result.items()
+        {"x": x, "y": y} for x, y in sorted(result.items(), key=lambda x: x[0])
     ]
 
 
