@@ -25,3 +25,9 @@ http://group2.exceed19.online
     - input as path
     - return JSON object
         - message : "already set command to {open}"
+7. add mock data : [post] http://group2.exceed19.online/addmock
+    - return list of
+        - gas_quantity : int
+        - time : datetime.datetime
+        - status : enum["SAFE","WARNING","DANGER"]
+        - isCommand : False
