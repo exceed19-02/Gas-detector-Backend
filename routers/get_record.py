@@ -48,6 +48,8 @@ def last_hour():
     data = []
     alldata = list(mongo_connection["Record"].find({"isCommand": False}, {"_id": 0, "status": 0, "isCommand": 0}))
     limit = datetime.now().timestamp() - 3600
+    if len(alldata) < 1:
+        raise HTTPException(status_code=400, detail='No record yet')
     for i in alldata:
         if i["time"].timestamp() > limit:
             temp = {
