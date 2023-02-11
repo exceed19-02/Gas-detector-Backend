@@ -68,9 +68,3 @@ def add_mockdata():
 @app.delete("/")
 def delete_record():
     mongo_connection["Record"].delete_many({"isCommand": False})
-
-# delete all data that gas_quantity is 0
-# @app.delete("/zero")
-#temporaty funcition
-def delete_zero():
-    mongo_connection["Record"].delete_many({"gas_quantity": 0})
