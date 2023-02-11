@@ -82,7 +82,7 @@ def last_day_average():
     for i in alldata:
         if i["time"].timestamp() > limit:
             date = i["time"]
-            data[datetime(date.day, date.month, date.day, date.hour)].append(i)
+            data[datetime(date.year, date.month, date.day, date.hour)].append(i)
     result = {}
     for date, readings in data.items():
         result[date] = sum(
