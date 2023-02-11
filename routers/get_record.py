@@ -1,6 +1,7 @@
 from collections import defaultdict
 from datetime import datetime
 from typing import Dict, Optional
+from utils import get_average_status
 
 from bson.son import SON
 from fastapi import APIRouter, HTTPException
@@ -23,7 +24,7 @@ class Sensor(BaseModel):
     isCommand: bool
     isOpen: Optional[bool]
 
-# TODO: every get method return a status of that gas in 3 function {"coor": List[{x, y} (same as prev)], List[status]}
+# TODO: every get method return a status of that gas in 3 function {x, y} status}
 
 
 @router.get("/command")
@@ -76,20 +77,30 @@ def last_day_average():
     """
     data = defaultdict(list)
     alldata = list(mongo_connection["Record"].find(
-        {"isCommand": False}, {"_id": 0, "status": 0, "isCommand": 0}))
+        {"isCommand": False}, {"_id": 0, "isCommand": 0}))
 
     if not alldata:
         raise HTTPException(status_code=400, detail='No record yet')
     limit = datetime.now().timestamp() - 24 * 3600
+    avg_status_dct = defaultdict(list)
     for i in alldata:
         if i["time"].timestamp() > limit:
             date = i["time"]
             data[datetime(date.year, date.month,
                           date.day, date.hour)].append(i)
+            avg_status_dct[datetime(date.year, date.month,
+                          date.day, date.hour)] = i["status"]
+
     result = {}
     for date, readings in data.items():
         result[date] = sum(
             map(lambda x: x["gas_quantity"], readings)) / len(readings)
+
+
+    for date, status in avg_status_dct.items():
+        avg_status_dct[date] = get_average_status(status)
+
+    print(avg_status_dct)
 
     return [
         {"x": x, "y": y} for x, y in sorted(result.items(), key=lambda x: x[0])
@@ -101,7 +112,7 @@ def last_day_average():
 def last_hour():
     data = []
     alldata = list(mongo_connection["Record"].find(
-        {"isCommand": False}, {"_id": 0, "status": 0, "isCommand": 0}))
+        {"isCommand": False}, {"_id": 0, "isCommand": 0}))
     limit = datetime.now().timestamp() - 3600
     if not alldata:
         raise HTTPException(status_code=400, detail='No record yet')
@@ -109,7 +120,8 @@ def last_hour():
         if i["time"].timestamp() > limit:
             temp = {
                 "x": i["time"],
-                "y": i["gas_quantity"]
+                "y": i["gas_quantity"],
+                "s": i["status"]
             }
             data.append(temp)
     return data
