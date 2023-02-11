@@ -23,6 +23,8 @@ class Sensor(BaseModel):
     isCommand: bool
     isOpen: Optional[bool]
 
+# TODO: every get method return a status of that gas in 3 function {"coor": List[{x, y} (same as prev)], List[status]}
+
 
 @router.get("/command")
 def get_command() -> Dict[str, bool]:

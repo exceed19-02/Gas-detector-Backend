@@ -36,6 +36,7 @@ class Sensor(BaseModel):
 
 
 # mock data
+#TODO:: Change status of mock data
 mock_data = []
 for i in range(23, -1, -1):
     mock_data.append({
@@ -62,6 +63,7 @@ for i in range(23, -1, -1):
 @app.post("/addmock")
 def add_mockdata():
     mongo_connection["Record"].insert_many(mock_data)
+    return {"message": "mock data generated"}
 
 
 # delete all data except isCommand
