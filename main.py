@@ -1,11 +1,13 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
-from routers import add_data, get_record, update_command
-from fastapi.middleware.cors import CORSMiddleware
-from typing import Optional
 from datetime import datetime
-from database import mongo_connection
 from random import randint
+from typing import Optional
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
+from database import mongo_connection
+from routers import add_data, get_record, update_command
 
 app = FastAPI()
 

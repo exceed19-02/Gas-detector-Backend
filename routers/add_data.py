@@ -1,7 +1,9 @@
-from fastapi import APIRouter, Body, HTTPException
-from typing import Optional
-from pydantic import BaseModel
 from datetime import datetime
+from typing import Optional
+
+from fastapi import APIRouter, Body, HTTPException
+from pydantic import BaseModel
+
 from database import mongo_connection
 
 router = APIRouter(
@@ -20,10 +22,11 @@ class Sensor(BaseModel):
 
 
 # add new record by input gas_quantity and status in body format
-@router.post("/", status_code=201)
+@router.post("", status_code=201)
 def add_record(gas_quantity: int = Body(), status: str = Body()):
     if gas_quantity < 0 or gas_quantity > 4000:
-        raise HTTPException(status_code=400, detail="Gas Quantity out of range")
+        raise HTTPException(
+            status_code=400, detail="Gas Quantity out of range")
     data = {
         "gas_quantity": gas_quantity,
         "time": datetime.now(),
