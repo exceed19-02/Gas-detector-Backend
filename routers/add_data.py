@@ -23,7 +23,7 @@ class Sensor(BaseModel):
 
 # add new record by input gas_quantity and status in body format
 @router.post("", status_code=201)
-def add_record(gas_quantity: int = Body(), status: str = Body()) -> Union[Dict["message": str], Dict["gas_quantity": int, "time": datetime, "status": str, "isCommand": bool]"]:
+def add_record(gas_quantity: int = Body(), status: str = Body()) -> Union[Dict["message": str], Dict["gas_quantity": int, "time": datetime, "status": str, "isCommand": bool]]:
     if gas_quantity < 0 or gas_quantity > 4095:
         raise HTTPException(
             status_code=400, detail="Gas Quantity out of range")
