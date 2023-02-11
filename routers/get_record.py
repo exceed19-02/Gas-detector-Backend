@@ -82,7 +82,8 @@ def last_day_average():
     for i in alldata:
         if i["time"].timestamp() > limit:
             date = i["time"]
-            data[datetime(date.year, date.month, date.day, date.hour)].append(i)
+            data[datetime(date.year, date.month,
+                          date.day, date.hour)].append(i)
     result = {}
     for date, readings in data.items():
         result[date] = sum(
@@ -109,4 +110,20 @@ def last_hour():
                 "y": i["gas_quantity"]
             }
             data.append(temp)
+    return data
+
+
+@router.get('/all')
+def all_record():
+    data = []
+    alldata = list(mongo_connection["Record"].find(
+        {"isCommand": False}, {"_id": 0, "status": 0, "isCommand": 0}))
+    if not alldata:
+        raise HTTPException(status_code=400, detail='No record yet')
+    for i in alldata:
+        temp = {
+            "x": i["time"],
+            "y": i["gas_quantity"]
+        }
+        data.append(temp)
     return data
