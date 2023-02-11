@@ -37,21 +37,21 @@ class Sensor(BaseModel):
 
 # mock data
 mock_data = []
-for i in range(23,-1,-1):
+for i in range(23, -1, -1):
     mock_data.append({
-        "gas_quantity": randint(0,4095),
+        "gas_quantity": randint(0, 4095),
         "time": datetime.fromtimestamp(datetime.now().timestamp()-(2500+(i*3600))),
         "status": "DANGER",
         "isCommand": False
     })
     mock_data.append({
-        "gas_quantity": randint(0,4095),
+        "gas_quantity": randint(0, 4095),
         "time": datetime.fromtimestamp(datetime.now().timestamp()-(1300+(i*3600))),
         "status": "DANGER",
         "isCommand": False
     })
     mock_data.append({
-        "gas_quantity": randint(0,4095),
+        "gas_quantity": randint(0, 4095),
         "time": datetime.fromtimestamp(datetime.now().timestamp()-(100+(i*3600))),
         "status": "DANGER",
         "isCommand": False
