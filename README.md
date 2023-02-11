@@ -10,10 +10,12 @@ you can use any link between 2 of this domain
     - return list of
         - x(time) : datetime.datetime
         - y(gas_quantity) : int
+        - status : enum["SAFE","WARNING","DANGER"]
 2. get all record in the last day (average in each hour): [get] `/record/last_day`
     - return list of
         - x(time) : datetime.datetime
         - y(avg of gas_quantity) : float
+        - status : enum["SAFE","WARNING","DANGER"]
 3. get all record (average in each day): [get] `/record/all`
     - return list of
         - x(time) : datetime.datetime
