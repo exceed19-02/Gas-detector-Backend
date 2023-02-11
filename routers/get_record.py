@@ -113,17 +113,32 @@ def last_hour():
     return data
 
 
-@router.get('/all')
-def all_record():
-    data = []
+@router.get("/all")
+def all_time_average():
+    """get all record all of data(average of day)
+
+    Raises:
+        HTTPException: When record not found
+
+    Returns:
+        Dict["isCommand"] -- _description_
+    """
+    data = defaultdict(list)
     alldata = list(mongo_connection["Record"].find(
         {"isCommand": False}, {"_id": 0, "status": 0, "isCommand": 0}))
+
     if not alldata:
         raise HTTPException(status_code=400, detail='No record yet')
+
     for i in alldata:
-        temp = {
-            "x": i["time"],
-            "y": i["gas_quantity"]
-        }
-        data.append(temp)
-    return data
+        date = i["time"]
+        data[datetime(date.year, date.month,
+                      date.day)].append(i)
+    result = {}
+    for date, readings in data.items():
+        result[date] = sum(
+            map(lambda x: x["gas_quantity"], readings)) / len(readings)
+
+    return [
+        {"x": x, "y": y} for x, y in sorted(result.items(), key=lambda x: x[0])
+    ]
