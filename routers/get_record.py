@@ -91,7 +91,7 @@ def last_day_average():
     result = {}
 
     for date, readings in data.items():
-        avg_gas = sum(map(lambda x: x[0], readings)) / len(readings)
+        avg_gas = sum(readings) / len(readings)
         result[date] = [
             avg_gas,
             get_status(avg_gas),
@@ -151,8 +151,8 @@ def all_time_average():
         data[datetime(date.year, date.month, date.day)].append(i["gas_quantity"])
     result = {}
 
-    for date, readings in data.items():
-        avg_gas = sum(map(lambda x: x[0], readings)) / len(readings)
+    for date, gas_quantity in data.items():
+        avg_gas = sum(gas_quantity) / len(gas_quantity)
         result[date] = [
             avg_gas,
             get_status(avg_gas),
