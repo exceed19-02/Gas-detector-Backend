@@ -20,6 +20,7 @@ you can use any link between 2 of this domain
     - return list of
         - x(time) : datetime.datetime
         - y(avg of gas_quantity) : float
+        - status : enum["SAFE","WARNING","DANGER"]
 4. get last record : [get] `/record/last`
     - return JSON object
         - gas_quantity : int
@@ -38,4 +39,6 @@ you can use any link between 2 of this domain
     - return JSON object
         - message : "already set command to {open}"
 8. add mock data : [post] `/addmock`
+    - return JSON object
+        - message : "mock data generated"
 9. delete all gas data : [delete]
