@@ -5,6 +5,7 @@ from typing import Optional
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from utils import get_status
 
 from database import mongo_connection
 from routers import add_data, get_record, update_command
@@ -36,15 +37,8 @@ class Sensor(BaseModel):
 
 
 # convert gas quantity into status
-#TODO:: Change range
-def get_status(x):
-    safe_limit = 1500
-    warning_limit = 2000
-    if x <= safe_limit:
-        return "SAFE"
-    if x <= warning_limit:
-        return "WARNING"
-    return "DANGER"
+
+
 
 
 # mock data

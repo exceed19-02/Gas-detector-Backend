@@ -1,7 +1,7 @@
 from collections import defaultdict
 from datetime import datetime
 from typing import Dict, Optional
-from utils import get_average_status
+from utils import get_status
 
 from bson.son import SON
 from fastapi import APIRouter, HTTPException
@@ -24,9 +24,6 @@ class Sensor(BaseModel):
     status: Optional[str]
     isCommand: bool
     isOpen: Optional[bool]
-
-
-# TODO: every get method return a status of that gas in 3 function {x, y} status}
 
 
 @router.get("/command")
@@ -78,7 +75,7 @@ def last_day_average():
     data = defaultdict(list)
     alldata = list(
         mongo_connection["Record"].find(
-            {"isCommand": False}, {"_id": 0, "isCommand": 0}
+            {"isCommand": False}, {"_id": 0, "status": 0, "isCommand": 0}
         )
     )
 
@@ -89,14 +86,15 @@ def last_day_average():
         if i["time"].timestamp() > limit and i["status"]:
             date = i["time"]
             data[datetime(date.year, date.month, date.day, date.hour)].append(
-                [i["gas_quantity"], i["status"]]
+                i["gas_quantity"]
             )
     result = {}
 
     for date, readings in data.items():
+        avg_gas = sum(map(lambda x: x[0], readings)) / len(readings)
         result[date] = [
-            sum(map(lambda x: x[0], readings)) / len(readings),
-            get_average_status(list(map(lambda x: x[1], readings))),
+            avg_gas,
+            get_status(avg_gas),
         ]
 
     return [
@@ -125,8 +123,7 @@ def last_hour():
         raise HTTPException(status_code=400, detail="No record yet")
     for i in alldata:
         if i["time"].timestamp() > limit:
-            temp = {"x": i["time"], "y": i["gas_quantity"],
-                    "status": i["status"]}
+            temp = {"x": i["time"], "y": i["gas_quantity"], "status": i["status"]}
             data.append(temp)
     return data
 
@@ -142,7 +139,7 @@ def all_time_average():
     data = defaultdict(list)
     alldata = list(
         mongo_connection["Record"].find(
-            {"isCommand": False}, {"_id": 0, "isCommand": 0}
+            {"isCommand": False}, {"_id": 0, "status": 0, "isCommand": 0}
         )
     )
 
@@ -151,15 +148,14 @@ def all_time_average():
 
     for i in alldata:
         date = i["time"]
-        data[datetime(date.year, date.month, date.day)].append(
-            [i["gas_quantity"], i["status"]]
-        )
+        data[datetime(date.year, date.month, date.day)].append(i["gas_quantity"])
     result = {}
 
     for date, readings in data.items():
+        avg_gas = sum(map(lambda x: x[0], readings)) / len(readings)
         result[date] = [
-            sum(map(lambda x: x[0], readings)) / len(readings),
-            get_average_status(list(map(lambda x: x[1], readings))),
+            avg_gas,
+            get_status(avg_gas),
         ]
 
     return [
