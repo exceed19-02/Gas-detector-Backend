@@ -83,7 +83,7 @@ def last_day_average():
         raise HTTPException(status_code=400, detail="No record yet")
     limit = datetime.now().timestamp() - 24 * 3600
     for i in alldata:
-        if i["time"].timestamp() > limit and i["status"]:
+        if i["time"].timestamp() > limit:
             date = i["time"]
             data[datetime(date.year, date.month, date.day, date.hour)].append(
                 i["gas_quantity"]
