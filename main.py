@@ -49,7 +49,7 @@ def get_status(x):
 
 # mock data
 mock_data = []
-for i in range(2, -1, -1):
+for i in range(23, -1, -1):
     x = randint(0, 4095)
     y = randint(0, 4095)
     z = randint(0, 4095)
