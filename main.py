@@ -35,26 +35,40 @@ class Sensor(BaseModel):
     isOpen: Optional[bool]
 
 
+# convert gas quantity into status
+#TODO:: Change range
+def get_status(x):
+    safe_limit = 1700
+    warning_limit = 3000
+    if x <= safe_limit:
+        return "SAFE"
+    if x <= warning_limit:
+        return "WARNING"
+    return "DANGER"
+
+
 # mock data
-#TODO:: Change status of mock data
 mock_data = []
-for i in range(23, -1, -1):
+for i in range(2, -1, -1):
+    x = randint(0, 4095)
+    y = randint(0, 4095)
+    z = randint(0, 4095)
     mock_data.append({
-        "gas_quantity": randint(0, 4095),
+        "gas_quantity": x,
         "time": datetime.fromtimestamp(datetime.now().timestamp()-(2500+(i*3600))),
-        "status": "DANGER",
+        "status": get_status(x),
         "isCommand": False
     })
     mock_data.append({
-        "gas_quantity": randint(0, 4095),
+        "gas_quantity": y,
         "time": datetime.fromtimestamp(datetime.now().timestamp()-(1300+(i*3600))),
-        "status": "DANGER",
+        "status": get_status(y),
         "isCommand": False
     })
     mock_data.append({
-        "gas_quantity": randint(0, 4095),
+        "gas_quantity": z,
         "time": datetime.fromtimestamp(datetime.now().timestamp()-(100+(i*3600))),
-        "status": "DANGER",
+        "status": get_status(z),
         "isCommand": False
     })
 
