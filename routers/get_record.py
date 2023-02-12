@@ -18,11 +18,13 @@ router = APIRouter(
 
 class Sensor(BaseModel):
     """sensor data model"""
+
     gas_quantity: Optional[int]
     time: Optional[datetime]
     status: Optional[str]
     isCommand: bool
     isOpen: Optional[bool]
+
 
 # TODO: every get method return a status of that gas in 3 function {x, y} status}
 
@@ -56,7 +58,7 @@ def last_quantity_status():
     pipeline = [
         {"$sort": SON([("time", -1)])},
         {"$match": {"isCommand": False}},
-        {"$limit": 1}
+        {"$limit": 1},
     ]
     record = mongo_connection["Record"].aggregate(pipeline).next()
     if not record:
@@ -74,41 +76,33 @@ def last_day_average():
         Dict["isCommand"] -- _description_
     """
     data = defaultdict(list)
-    alldata = list(mongo_connection["Record"].find(
-        {"isCommand": False}, {"_id": 0, "isCommand": 0}))
+    alldata = list(
+        mongo_connection["Record"].find(
+            {"isCommand": False}, {"_id": 0, "isCommand": 0}
+        )
+    )
 
     if not alldata:
-        raise HTTPException(status_code=400, detail='No record yet')
+        raise HTTPException(status_code=400, detail="No record yet")
     limit = datetime.now().timestamp() - 24 * 3600
     for i in alldata:
-        if i["time"].timestamp() > limit:
+        if i["time"].timestamp() > limit and i["status"]:
             date = i["time"]
-            data[datetime(date.year, date.month,
-                          date.day, date.hour)].append(i)
+            data[datetime(date.year, date.month, date.day, date.hour)].append(
+                [i["gas_quantity"], i["status"]]
+            )
     result = {}
-    status_count = defaultdict(int)
-    total_count = 0
+
     for date, readings in data.items():
-        result[date] = sum(
-            map(lambda x: x["gas_quantity"], readings)) / len(readings)
-        for reading in readings:
-            status_count[reading["status"]] += 1
-            total_count += 1
-    avg_status = {
-        status: count / total_count
-        for status, count in status_count.items()
-    }
+        result[date] = [
+            sum(map(lambda x: x[0], readings)) / len(readings),
+            get_average_status(list(map(lambda x: x[1], readings))),
+        ]
 
-    status_dct = {"SAFE": 0, "WARNING": 1, "DANGER": 2}
-    status_sum = []
-    for status, count in avg_status.items():
-        if status in status_dct:
-            status_sum.append(status_dct[status] * count)
-    average_status = round(sum(status_sum) / total_count)
-    average_status = list(status_dct.keys())[average_status]
-
-    return [{"x": x, "y": y} for x, y in sorted(result.items(), key=lambda x: x[0])],{"s": average_status}
-
+    return [
+        {"x": x, "y": y[0], "status": y[1]}
+        for x, y in sorted(result.items(), key=lambda x: x[0])
+    ]
 
 
 # get all record in the last hour
@@ -121,73 +115,54 @@ def last_hour():
         Dict["time", "gas_quantity" and "status"] -- _description_
     """
     data = []
-    alldata = list(mongo_connection["Record"].find(
-        {"isCommand": False}, {"_id": 0, "isCommand": 0}))
+    alldata = list(
+        mongo_connection["Record"].find(
+            {"isCommand": False}, {"_id": 0, "isCommand": 0}
+        )
+    )
     limit = datetime.now().timestamp() - 3600
     if not alldata:
-        raise HTTPException(status_code=400, detail='No record yet')
+        raise HTTPException(status_code=400, detail="No record yet")
     for i in alldata:
         if i["time"].timestamp() > limit:
-            temp = {
-                "x": i["time"],
-                "y": i["gas_quantity"],
-                "s": i["status"]
-            }
+            temp = {"x": i["time"], "y": i["gas_quantity"],
+                    "status": i["status"]}
             data.append(temp)
     return data
-    
 
 
 @router.get("/all")
 def all_time_average():
     """get all record all of data(average of day)
-
     Raises:
         HTTPException: When record not found
-
     Returns:
         Dict["isCommand"] -- _description_
     """
     data = defaultdict(list)
-    alldata = list(mongo_connection["Record"].find(
-        {"isCommand": False}, {"_id": 0, "gas_quantity": 0, "isCommand": 0}))
+    alldata = list(
+        mongo_connection["Record"].find(
+            {"isCommand": False}, {"_id": 0, "isCommand": 0}
+        )
+    )
 
     if not alldata:
-        raise HTTPException(status_code=400, detail='No record yet')
+        raise HTTPException(status_code=400, detail="No record yet")
 
     for i in alldata:
         date = i["time"]
-        data[datetime(date.year, date.month,
-                      date.day)].append(i)
-        result = {}
-        status_count = defaultdict(int)
-        total_count = 0
-        for date, readings in data.items():
-            sum_gas_quantity = 0
-            for reading in readings:
-                if "gas_quantity" in reading:
-                    sum_gas_quantity += reading["gas_quantity"]
-            result[date] = sum_gas_quantity / len(readings)
-            for reading in readings:
-                if "status" in reading:
-                    status_count[reading["status"]] += 1
-                    total_count += 1
-    avg_status = {
-        status: count / total_count
-        for status, count in status_count.items()
-    }
+        data[datetime(date.year, date.month, date.day, date.hour)].append(
+            [i["gas_quantity"], i["status"]]
+        )
+    result = {}
 
-    status_dct = {"SAFE": 0, "WARNING": 1, "DANGER": 2}
-    status_sum = []
-    for status, count in avg_status.items():
-        if status in status_dct:
-            status_sum.append(status_dct[status] * count)
+    for date, readings in data.items():
+        result[date] = [
+            sum(map(lambda x: x[0], readings)) / len(readings),
+            get_average_status(list(map(lambda x: x[1], readings))),
+        ]
 
-    average_status = round(sum(status_sum) / total_count)
-
-    average_status = list(status_dct.keys())[average_status]
-
-    return [{"x": x, "y": y} for x, y in sorted(result.items(), key=lambda x: x[0])],{"s": average_status}
-    
-
-
+    return [
+        {"x": x, "y": y[0], "status": y[1]}
+        for x, y in sorted(result.items(), key=lambda x: x[0])
+    ]

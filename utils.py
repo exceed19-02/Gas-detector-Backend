@@ -1,8 +1,9 @@
 from typing import List
 
+
 def get_average_status(all_status: List[str]) -> str:
     """"""
-    status_dct = {"SAFE": 0, "WARNING": 1, "DANGER": 2}
+    status_dct = {"SAFE": 0, "WARNING": 1, "DANGER": 2, "WARN": 1}
 
     status_sum = []
     for status in all_status:

@@ -36,13 +36,12 @@ def add_record(gas_quantity: int = Body(), status: str = Body()):
         _type_ -- _description_
     """
     if gas_quantity < 0 or gas_quantity > 4095:
-        raise HTTPException(
-            status_code=400, detail="Gas Quantity out of range")
+        raise HTTPException(status_code=400, detail="Gas Quantity out of range")
     data = {
         "gas_quantity": gas_quantity,
         "time": datetime.now(),
         "status": status,
-        "isCommand": False
+        "isCommand": False,
     }
     mongo_connection["Record"].insert_one(data)
     return {"message": "Record created"}
