@@ -151,7 +151,7 @@ def all_time_average():
 
     for i in alldata:
         date = i["time"]
-        data[datetime(date.year, date.month, date.day, date.hour)].append(
+        data[datetime(date.year, date.month, date.day)].append(
             [i["gas_quantity"], i["status"]]
         )
     result = {}
