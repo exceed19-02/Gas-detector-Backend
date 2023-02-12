@@ -38,8 +38,8 @@ class Sensor(BaseModel):
 # convert gas quantity into status
 #TODO:: Change range
 def get_status(x):
-    safe_limit = 1700
-    warning_limit = 3000
+    safe_limit = 1500
+    warning_limit = 2000
     if x <= safe_limit:
         return "SAFE"
     if x <= warning_limit:
